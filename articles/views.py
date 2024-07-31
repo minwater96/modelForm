@@ -28,20 +28,39 @@ def create(request):
         if form.is_valid(): # 데이타를 제대로 입력했는지 확인
             form.save() # True값 저장
             return redirect('articles:index')
-        else:
-            form = ArticleForm(request.POST) #기존 데이터를 가지고 새로운 폼 제작
-
-            context = {
-                'form': form,
-
-            }
-        return render(request, 'create.html', context)
 
     else:
         form = ArticleForm()
 
-        context = {
-            'form': form,
-        }
+    context = {
+        'form': form,
+    }
 
-        return render(request, 'create.html', context)
+    return render(request, 'create.html', context)
+
+def delete(request, id):
+    if request.method == 'POST':
+        article = Article.objects.get(id=id)
+        article.delete()
+
+    return redirect('articles:index')
+
+def update(request, id):
+    article = Article.objects.get(id=id)
+
+    if request.method == 'POST':    
+        form = ArticleForm(request.POST, instance=article)
+
+        if form.is_valid():
+            form.save()
+            return redirect('articles:index')
+
+    else:
+        form = ArticleForm(instance=article)
+    
+    context = {
+        'form': form
+    }
+
+    return render(request, 'update.html', context)
+
